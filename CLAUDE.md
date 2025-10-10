@@ -11,9 +11,8 @@ This is a golf equipment e-commerce site with a Next.js 15 frontend and .NET 8 W
 ### Frontend
 - **Framework**: Next.js 15.2.4 (App Router)
 - **Styling**: TailwindCSS 3.4
-- **Content Management**: Velite.js (MDX-based, for static content/blogs)
+- **Content Management**: API-based (all product data from .NET API)
 - **Language**: JavaScript (React 19)
-- **View Counter**: Supabase (optional, requires configuration)
 - **Deployment**: Optimized for Vercel
 
 ### Backend API
@@ -107,7 +106,6 @@ Products are defined in `velite.config.js` with the following fields:
 - `/` - Homepage with hero banner, featured products, and category showcases
 - `/products/[slug]` - Individual product detail pages
 - `/categories/[slug]` - Category listing pages (clubs, balls, shoes, gloves, etc.)
-- `/blogs/[slug]` - Blog posts (from original template, still functional)
 - `/about` - About page
 - `/contact` - Contact page
 
@@ -120,7 +118,6 @@ src/components/
 │   ├── FeaturedProducts.js     # Featured products section
 │   ├── CategoryShowcase.js     # Category-specific product showcase
 │   └── HeroBanner.js           # Homepage hero banner
-├── Blog/                       # Blog-related components (from template)
 ├── Header/                     # Site navigation
 └── Footer/                     # Site footer
 ```
@@ -173,15 +170,10 @@ filters:
 ```bash
 # API Configuration (Required for product data)
 NEXT_PUBLIC_API_URL=http://localhost:5065/api
-
-# Supabase (Optional - only for blog view counters)
-NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder_key_not_configured
 ```
 
 **Note**:
 - The `.env.local` file is gitignored for security. Each developer must create their own copy.
-- Supabase is optional and only used for blog view counters. The site works without it.
 - The API URL is required for the frontend to fetch product and category data.
 
 ## Important Notes
@@ -220,7 +212,7 @@ The integration uses an API client library located at `src/lib/api.js` that prov
 - Fetching all categories
 - CRUD operations for products
 
-**Note**: MDX content in `content/products/` is no longer used for products (Velite is still used for blog posts). All product data comes from the API/database.
+**Note**: All product data comes from the .NET API and SQLite database. MDX content is not used for products.
 
 ### API Environment Variables
 
@@ -229,10 +221,6 @@ The integration uses an API client library located at `src/lib/api.js` that prov
 ```bash
 # API Configuration (Required)
 NEXT_PUBLIC_API_URL=http://localhost:5065/api
-
-# Supabase (Optional - only for blog view counters)
-NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder_key_not_configured
 ```
 
 The `.env.local` file is gitignored for security. Each developer must create their own copy.
