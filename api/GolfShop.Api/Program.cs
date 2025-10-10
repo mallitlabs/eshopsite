@@ -56,6 +56,9 @@ if (app.Environment.IsDevelopment())
 // Disable HTTPS redirection for development (using HTTP on localhost)
 // app.UseHttpsRedirection();
 
+// Serve static files (images)
+app.UseStaticFiles();
+
 // Use CORS
 app.UseCors("AllowNextJs");
 

@@ -4,6 +4,34 @@ module.exports = {
     compiler: {
       removeConsole: process.env.NODE_ENV === 'production' ? true : false,
     },
+    images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'images.unsplash.com',
+          port: '',
+          pathname: '/**',
+        },
+        {
+          protocol: 'http',
+          hostname: 'localhost',
+          port: '5065',
+          pathname: '/images/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'acushnet.scene7.com',
+          port: '',
+          pathname: '/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'worldwidegolf.vtexassets.com',
+          port: '',
+          pathname: '/**',
+        },
+      ],
+    },
     webpack: config => {
       config.plugins.push(new VeliteWebpackPlugin())
       return config

@@ -1,0 +1,52 @@
+Required Product Images
+========================
+
+Place these .png files in this folder (api/GolfShop.Api/wwwroot/images/products/):
+
+CLUBS - DRIVERS:
+1. TitleistTSi3Driver.png
+2. TaylorMadeStealth2Driver.png
+3. CallawayParadymDriver.png
+
+CLUBS - IRONS:
+4. CallawayRogueSTMaxIrons.png
+5. TaylorMadeP790Irons.png
+6. PingG430Irons.png
+
+CLUBS - WEDGES:
+7. TitleistVokeySM9Wedge.png
+8. ClevelandRTXZipCoreWedge.png
+
+CLUBS - PUTTERS:
+9. ScottyCameronSpecialSelectNewport2.png
+10. OdysseyWhiteHotOGPutter.png
+
+GOLF BALLS:
+11. TitleistProV1GolfBalls.png
+12. CallawayChromeSoftGolfBalls.png
+13. TaylorMadeTP5GolfBalls.png
+14. BridgestoneTourBXSGolfBalls.png
+
+SHOES:
+15. FootJoyProSLGolfShoes.png
+16. AdidasCodeChaos22GolfShoes.png
+17. NikeAirZoomInfinityTourGolfShoes.png
+18. EccoBiomC4GolfShoes.png
+
+GLOVES:
+19. TitleistPerma-SoftGolfGlove.png
+20. FootJoyStaSofGolfGlove.png
+
+BAGS:
+21. TitleistPlayers4StaDryStandBag.png
+22. CallawayORG14CartBag.png
+
+ACCESSORIES:
+23. BushnellProXERangefinder.png
+24. GarminApproachS62GPSWatch.png
+
+========================
+Total: 24 images needed
+
+Note: Filenames are case-sensitive and must match exactly (including capital letters).
+Recommended image size: 800x800px or larger (1:1 aspect ratio)

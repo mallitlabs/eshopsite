@@ -11,7 +11,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  const product = await getProductBySlug(params.slug);
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return {};
@@ -24,7 +25,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
-  const product = await getProductBySlug(params.slug);
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
@@ -51,7 +53,7 @@ export default async function ProductPage({ params }) {
                 src={product.imageUrl || product.image.src}
                 alt={product.title}
                 fill
-                className="object-cover"
+                className="object-contain"
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
               />
@@ -211,7 +213,7 @@ export default async function ProductPage({ params }) {
                       src={relatedProduct.imageUrl || relatedProduct.image.src}
                       alt={relatedProduct.title}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform"
+                      className="object-contain group-hover:scale-105 transition-transform"
                       sizes="(max-width: 768px) 100vw, 25vw"
                     />
                   ) : (

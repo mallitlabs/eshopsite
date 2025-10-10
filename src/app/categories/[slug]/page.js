@@ -10,18 +10,21 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
+  const { slug } = await params;
   return {
-    title: `${params.slug.charAt(0).toUpperCase() + params.slug.slice(1)} - Golf Equipment`,
-    description: `Browse our selection of premium golf ${params.slug}. Find the perfect equipment for your game.`,
+    title: `${slug.charAt(0).toUpperCase() + slug.slice(1)} - Golf Equipment`,
+    description: `Browse our selection of premium golf ${slug}. Find the perfect equipment for your game.`,
   };
 }
 
 const CategoryPage = async ({ params }) => {
+  const { slug } = await params;
+
   // Get all categories
   const allCategories = await getCategories();
 
   // Filter products by category
-  const products = await getProducts({ category: params.slug });
+  const products = await getProducts({ category: slug });
 
   // Get category-specific filters (example)
   const brands = [...new Set(products.map(p => p.brand))].sort();
@@ -30,7 +33,7 @@ const CategoryPage = async ({ params }) => {
     <article className="mt-12 flex flex-col text-dark dark:text-light">
       <div className="px-5 sm:px-10 md:px-24 sxl:px-32 flex flex-col">
         <h1 className="mt-6 font-semibold text-2xl md:text-4xl lg:text-5xl capitalize">
-          {params.slug}
+          {slug}
         </h1>
         <span className="mt-2 inline-block text-gray-600 dark:text-gray-400">
           Showing {products.length} {products.length === 1 ? 'product' : 'products'}
@@ -44,7 +47,7 @@ const CategoryPage = async ({ params }) => {
             key={category.slug}
             href={`/categories/${category.slug}`}
             className={`px-4 py-2 rounded-full border transition-colors ${
-              params.slug === category.slug
+              slug === category.slug
                 ? 'bg-accent dark:bg-accentDark text-white border-accent dark:border-accentDark'
                 : 'border-dark dark:border-light hover:bg-gray-100 dark:hover:bg-gray-800'
             }`}

@@ -21,7 +21,13 @@
       "Bash(npm uninstall:*)",
       "Bash(git restore:*)",
       "Bash(netstat:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(sqlite3:*)",
+      "Bash(if [ -f golfshop.db ])",
+      "Bash(then rm golfshop.db)",
+      "Bash(else echo \"No database file found\")",
+      "Bash(fi)"
     ],
     "deny": [],
     "ask": []
