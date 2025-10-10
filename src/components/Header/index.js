@@ -50,9 +50,13 @@ const toggle = () =>{
         style={{
           top: click ? "1rem" : "-5rem"
          }}
-        
+
         >
             <Link href="/" className="mr-2">Home</Link>
+            <Link href="/categories/clubs" className="mx-2">Clubs</Link>
+            <Link href="/categories/balls" className="mx-2">Balls</Link>
+            <Link href="/categories/shoes" className="mx-2">Shoes</Link>
+            <Link href="/categories/gloves" className="mx-2">Gloves</Link>
             <Link href="/about" className="mx-2">About</Link>
             <Link href="/contact" className="mx-2">Contact</Link>
             <button onClick={() => setMode(mode === "light" ? "dark" : "light")  }
@@ -70,6 +74,10 @@ const toggle = () =>{
         <nav className=" w-max py-3 px-8 border border-solid border-dark rounded-full font-medium capitalize  items-center hidden sm:flex
         fixed top-6 right-1/2 translate-x-1/2 bg-light/80 backdrop-blur-sm z-50">
             <Link href="/" className="mr-2">Home</Link>
+            <Link href="/categories/clubs" className="mx-2">Clubs</Link>
+            <Link href="/categories/balls" className="mx-2">Balls</Link>
+            <Link href="/categories/shoes" className="mx-2">Shoes</Link>
+            <Link href="/categories/gloves" className="mx-2">Gloves</Link>
             <Link href="/about" className="mx-2">About</Link>
             <Link href="/contact" className="mx-2">Contact</Link>
             <button onClick={() => setMode(mode === "light" ? "dark" : "light")  }

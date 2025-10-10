@@ -1,14 +1,17 @@
-import {blogs} from "@/.velite/generated";
-import HomeCoverSection from "../components/Home/HomeCoverSection";
-import FeaturedPosts from "../components/Home/FeaturedPosts";
-import RecentPosts from "../components/Home/RecentPosts";
+import { products } from "@/.velite/generated";
+import HeroBanner from "../components/Product/HeroBanner";
+import FeaturedProducts from "../components/Product/FeaturedProducts";
+import CategoryShowcase from "../components/Product/CategoryShowcase";
 
 export default function Home() {
   return (
     <main className="flex flex-col items-center justify-center">
-      <HomeCoverSection blogs={blogs} />
-      <FeaturedPosts blogs={blogs} />
-      <RecentPosts blogs={blogs} />
+      <HeroBanner products={products} />
+      <FeaturedProducts products={products} />
+      <CategoryShowcase category="clubs" products={products} title="Shop Clubs" />
+      <CategoryShowcase category="balls" products={products} title="Shop Balls" />
+      <CategoryShowcase category="shoes" products={products} title="Shop Shoes" />
+      <CategoryShowcase category="gloves" products={products} title="Shop Gloves" />
     </main>
   )
 }
