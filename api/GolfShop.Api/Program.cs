@@ -53,7 +53,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Disable HTTPS redirection for development (using HTTP on localhost)
+// app.UseHttpsRedirection();
 
 // Use CORS
 app.UseCors("AllowNextJs");
