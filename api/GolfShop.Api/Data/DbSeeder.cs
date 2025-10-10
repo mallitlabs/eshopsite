@@ -944,7 +944,7 @@ public static class DbSeeder
                 Description = "Premium GPS golf watch with Virtual Caddie, PlaysLike Distance, and full-color touchscreen.",
                 Slug = "garmin-approach-s62",
                 ImageUrl = "http://localhost:5065/images/products/GarminApproachS62GPSWatch.png",
-                Featured = true,
+                Featured = false,
                 InStock = true,
                 StockQuantity = 42,
                 Rating = 4.8,

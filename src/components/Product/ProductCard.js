@@ -1,11 +1,33 @@
+"use client";
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
+import { useCart } from '@/src/contexts/CartContext';
 
 const ProductCard = ({ product }) => {
+  const { addToCart, openCart } = useCart();
+  const [justAdded, setJustAdded] = useState(false);
   const discountPercentage = product.salePrice
     ? Math.round(((product.price - product.salePrice) / product.price) * 100)
     : 0;
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    addToCart(product, 1);
+    setJustAdded(true);
+
+    // Open cart drawer after adding
+    setTimeout(() => {
+      openCart();
+    }, 300);
+
+    // Reset animation state
+    setTimeout(() => {
+      setJustAdded(false);
+    }, 2000);
+  };
 
   return (
     <div className="group relative bg-white dark:bg-dark rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
@@ -101,6 +123,31 @@ const ProductCard = ({ product }) => {
           )}
         </div>
       </Link>
+
+      {/* Add to Cart Button */}
+      <div className="p-4 pt-0">
+        <button
+          onClick={handleAddToCart}
+          disabled={!product.inStock}
+          className={`
+            w-full py-2.5 px-4 rounded-full font-semibold text-sm
+            transition-all duration-300
+            ${product.inStock
+              ? justAdded
+                ? 'bg-green-500 text-white scale-105'
+                : 'bg-accent dark:bg-accentDark text-white hover:scale-105 hover:shadow-md'
+              : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+            }
+          `}
+        >
+          {!product.inStock
+            ? 'Out of Stock'
+            : justAdded
+            ? '✓ Added!'
+            : 'Add to Cart'
+          }
+        </button>
+      </div>
     </div>
   );
 };

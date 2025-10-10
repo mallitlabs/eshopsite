@@ -2,6 +2,7 @@ import { getProducts, getProductBySlug } from "@/src/lib/api";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import AddToCartButton from "@/src/components/Product/AddToCartButton";
 
 export async function generateStaticParams() {
   const products = await getProducts();
@@ -156,6 +157,11 @@ export default async function ProductPage({ params }) {
                 <span className="text-2xl">✗</span> Out of Stock
               </p>
             )}
+          </div>
+
+          {/* Add to Cart Button */}
+          <div className="mb-8">
+            <AddToCartButton product={product} />
           </div>
 
           {/* Specifications */}

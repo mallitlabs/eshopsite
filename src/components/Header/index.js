@@ -1,16 +1,20 @@
 "use client"
 import Link from "next/link";
 import Logo from "./Logo";
-import { DribbbleIcon, GithubIcon, LinkedinIcon, MoonIcon, SunIcon, TwitterIcon } from "../Icons";
+import { LinkedinIcon, MoonIcon, SunIcon, TwitterIcon, ShoppingCartIcon } from "../Icons";
 import siteMetadata from "@/src/utils/siteMetaData";
 import { useThemeSwitch } from "../Hooks/useThemeSwitch";
 import { useState } from "react";
 import { cx } from "@/src/utils";
+import { useCart } from "@/src/contexts/CartContext";
+import CartDrawer from "../Cart/CartDrawer";
 
 const Header = () => {
 
   const [mode, setMode] = useThemeSwitch();
   const [click, setClick] = useState(false);
+  const { toggleCart, getCartItemCount } = useCart();
+  const cartItemCount = getCartItemCount();
 
 const toggle = () =>{
   setClick(!click)
@@ -91,11 +95,24 @@ const toggle = () =>{
             </button>
         </nav>
         <div className=" hidden sm:flex items-center">
-            <a href={siteMetadata.linkedin} rel="noopener noreferrer" className="inline-block w-6 h-6 mr-4" aria-label="Reach out to me via LinkedIn" target="_blank"><LinkedinIcon className="hover:scale-125 transition-all ease duration-200" /></a>
-            <a href={siteMetadata.twitter} rel="noopener noreferrer" className="inline-block w-6 h-6 mr-4" aria-label="Reach out to me via Twitter" target="_blank"><TwitterIcon className="hover:scale-125 transition-all ease duration-200" /></a>
-            <a href={siteMetadata.github} rel="noopener noreferrer" className="inline-block w-6 h-6 mr-4" aria-label="Check my profile on Github" target="_blank"><GithubIcon className="  hover:scale-125 transition-all ease duration-200 dark:fill-light" /></a>
-            <a href={siteMetadata.dribbble} rel="noopener noreferrer" className="inline-block w-6 h-6 mr-4" aria-label="Check my profile on Dribbble" target="_blank"><DribbbleIcon className="hover:scale-125 transition-all ease duration-200" /></a>
+            <a href="https://linkedin.com" rel="noopener noreferrer" className="inline-block w-6 h-6 mr-4" aria-label="Follow us on LinkedIn" target="_blank"><LinkedinIcon className="hover:scale-125 transition-all ease duration-200" /></a>
+            <a href="https://x.com" rel="noopener noreferrer" className="inline-block w-6 h-6 mr-4" aria-label="Follow us on X" target="_blank"><TwitterIcon className="hover:scale-125 transition-all ease duration-200" /></a>
+
+            {/* Shopping Cart Icon */}
+            <button
+              onClick={toggleCart}
+              className="relative inline-block w-6 h-6"
+              aria-label="Shopping cart"
+            >
+              <ShoppingCartIcon className="hover:scale-125 transition-all ease duration-200 dark:stroke-light" />
+              {cartItemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItemCount > 9 ? '9+' : cartItemCount}
+                </span>
+              )}
+            </button>
         </div>
+        <CartDrawer />
     </header>
   )
 }

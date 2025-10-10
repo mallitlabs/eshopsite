@@ -1,20 +1,20 @@
 // please update required information
 const siteMetadata = {
-    title: 'Next.js Blog With Tailwind CSS and Contentlayer',
-    author: 'CodeBucks',
-    headerTitle: 'Next.js Blog',
-    description: 'A blog created with Next.js, Tailwind.css and contentlayer.',
+    title: 'GolfShop - Premium Golf Equipment & Accessories',
+    author: 'GolfShop',
+    headerTitle: 'GolfShop',
+    description: 'Your premier destination for high-quality golf equipment, clubs, balls, shoes, and accessories.',
     language: 'en-us',
     theme: 'system', // system, dark or light
-    siteUrl: 'https://create-blog-with-nextjs.vercel.app', // your website URL
+    siteUrl: 'https://golfshop.com', // your website URL
     siteLogo: '/logo.png',
     socialBanner: '/social-banner.png', // add social banner in the public folder
-    email: 'codebucks27@gmail.com', 
-    github: 'https://github.com/codebucks27',
-    twitter: 'https://twitter.com/code_bucks',
-    facebook: 'https://facebook.com',
-    youtube: 'https://youtube.com/codebucks',
-    linkedin: 'https://www.linkedin.com/in/codebucks/',
+    email: 'info@golfshop.com',
+    github: 'https://github.com/golfshop',
+    twitter: 'https://twitter.com/golfshop',
+    facebook: 'https://facebook.com/golfshop',
+    youtube: 'https://youtube.com/golfshop',
+    linkedin: 'https://www.linkedin.com/company/golfshop/',
     dribbble: 'https://www.dribbble.com',
     locale: 'en-US',
   }

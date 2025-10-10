@@ -1,5 +1,5 @@
 import { getProducts } from "@/src/lib/api";
-import HeroBanner from "../components/Product/HeroBanner";
+import GolfBanner from "../components/GolfBanner";
 import FeaturedProducts from "../components/Product/FeaturedProducts";
 import CategoryShowcase from "../components/Product/CategoryShowcase";
 
@@ -9,7 +9,7 @@ export default async function Home() {
 
   return (
     <main className="flex flex-col items-center justify-center">
-      <HeroBanner products={allProducts} />
+      <GolfBanner />
       <FeaturedProducts products={allProducts} />
       <CategoryShowcase category="clubs" products={allProducts} title="Shop Clubs" />
       <CategoryShowcase category="balls" products={allProducts} title="Shop Balls" />
