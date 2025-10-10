@@ -1,17 +1,17 @@
-import { products } from "@/.velite/generated";
+import { getProducts, getProductBySlug } from "@/src/lib/api";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import RenderMdx from "@/src/components/Blog/RenderMdx";
 
 export async function generateStaticParams() {
+  const products = await getProducts();
   return products.map((product) => ({
     slug: product.slug,
   }));
 }
 
 export async function generateMetadata({ params }) {
-  const product = products.find((p) => p.slug === params.slug);
+  const product = await getProductBySlug(params.slug);
 
   if (!product) {
     return {};
@@ -23,8 +23,8 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function ProductPage({ params }) {
-  const product = products.find((p) => p.slug === params.slug);
+export default async function ProductPage({ params }) {
+  const product = await getProductBySlug(params.slug);
 
   if (!product) {
     notFound();
@@ -35,8 +35,9 @@ export default function ProductPage({ params }) {
     : 0;
 
   // Get related products from same category
-  const relatedProducts = products
-    .filter((p) => p.category === product.category && p.slug !== product.slug)
+  const allProducts = await getProducts({ category: product.category });
+  const relatedProducts = allProducts
+    .filter((p) => p.slug !== product.slug)
     .slice(0, 4);
 
   return (
@@ -45,9 +46,9 @@ export default function ProductPage({ params }) {
         {/* Product Image */}
         <div className="relative">
           <div className="relative h-96 lg:h-[600px] w-full bg-gray-100 dark:bg-gray-800 rounded-2xl overflow-hidden">
-            {product.image?.src ? (
+            {(product.imageUrl || product.image?.src) ? (
               <Image
-                src={product.image.src}
+                src={product.imageUrl || product.image.src}
                 alt={product.title}
                 fill
                 className="object-cover"
@@ -184,10 +185,12 @@ export default function ProductPage({ params }) {
         </div>
       </div>
 
-      {/* Product Details (MDX Content) */}
-      <div className="prose prose-lg dark:prose-invert max-w-none mb-16">
-        <RenderMdx blog={product} />
-      </div>
+      {/* Product Details (Body Content) */}
+      {product.bodyContent && (
+        <div className="prose prose-lg dark:prose-invert max-w-none mb-16">
+          <div dangerouslySetInnerHTML={{ __html: product.bodyContent }} />
+        </div>
+      )}
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
@@ -199,13 +202,13 @@ export default function ProductPage({ params }) {
             {relatedProducts.map((relatedProduct) => (
               <Link
                 key={relatedProduct.slug}
-                href={relatedProduct.url}
+                href={`/products/${relatedProduct.slug}`}
                 className="group"
               >
                 <div className="relative h-48 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden mb-3">
-                  {relatedProduct.image?.src ? (
+                  {(relatedProduct.imageUrl || relatedProduct.image?.src) ? (
                     <Image
-                      src={relatedProduct.image.src}
+                      src={relatedProduct.imageUrl || relatedProduct.image.src}
                       alt={relatedProduct.title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform"

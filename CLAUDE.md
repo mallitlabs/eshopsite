@@ -169,13 +169,20 @@ filters:
 
 ## Environment Variables
 
-Create a `.env` file based on `.env.example`:
-```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
+**REQUIRED**: Create a `.env.local` file in the project root:
+```bash
+# API Configuration (Required for product data)
+NEXT_PUBLIC_API_URL=http://localhost:5065/api
+
+# Supabase (Optional - only for blog view counters)
+NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder_key_not_configured
 ```
 
-Note: Supabase is optional and only used for blog view counters. The site works without it.
+**Note**:
+- The `.env.local` file is gitignored for security. Each developer must create their own copy.
+- Supabase is optional and only used for blog view counters. The site works without it.
+- The API URL is required for the frontend to fetch product and category data.
 
 ## Important Notes
 
@@ -203,42 +210,32 @@ The backend API provides the following endpoints:
 - `GET /api/categories` - Get all categories
 - `GET /api/categories/{slug}` - Get category by slug
 
-### Connecting Frontend to API
+### Frontend-API Integration
 
-To switch the Next.js frontend from MDX-based content to API-based:
+**Status**: ✓ Fully integrated - The Next.js frontend now fetches all product and category data from the API.
 
-1. Create API client in `src/lib/api.js`:
-```javascript
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5065/api';
+The integration uses an API client library located at `src/lib/api.js` that provides functions for:
+- Fetching all products with optional filtering
+- Fetching individual products by ID or slug
+- Fetching all categories
+- CRUD operations for products
 
-export async function getProducts(params = {}) {
-  const query = new URLSearchParams(params);
-  const response = await fetch(`${API_BASE_URL}/products?${query}`);
-  return response.json();
-}
+**Note**: MDX content in `content/products/` is no longer used for products (Velite is still used for blog posts). All product data comes from the API/database.
 
-export async function getProductBySlug(slug) {
-  const response = await fetch(`${API_BASE_URL}/products/by-slug/${slug}`);
-  return response.json();
-}
+### API Environment Variables
 
-export async function getCategories() {
-  const response = await fetch(`${API_BASE_URL}/categories`);
-  return response.json();
-}
-```
+**IMPORTANT**: You must create a `.env.local` file in the project root with the following content:
 
-2. Update pages to use API instead of Velite:
-   - Replace `import { products } from "@/.velite/generated"` with API calls
-   - Use `fetch` or `axios` in server components
-   - Or use React Query/SWR for client-side data fetching
-
-### Environment Variables
-
-Add to `.env.local`:
-```
+```bash
+# API Configuration (Required)
 NEXT_PUBLIC_API_URL=http://localhost:5065/api
+
+# Supabase (Optional - only for blog view counters)
+NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder_key_not_configured
 ```
+
+The `.env.local` file is gitignored for security. Each developer must create their own copy.
 
 ## Database Management
 

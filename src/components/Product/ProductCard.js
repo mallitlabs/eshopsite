@@ -12,9 +12,9 @@ const ProductCard = ({ product }) => {
       <Link href={product.url} className="block">
         {/* Product Image */}
         <div className="relative h-64 w-full bg-gray-100 dark:bg-gray-800">
-          {product.image?.src ? (
+          {(product.imageUrl || product.image?.src) ? (
             <Image
-              src={product.image.src}
+              src={product.imageUrl || product.image.src}
               alt={product.title}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"

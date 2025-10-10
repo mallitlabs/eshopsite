@@ -1,19 +1,12 @@
-import { products as allProducts } from "@/.velite/generated";
+import { getProducts, getCategories } from "@/src/lib/api";
 import ProductCard from "@/src/components/Product/ProductCard";
 import Link from "next/link";
 
 export async function generateStaticParams() {
-  const categories = [];
-  const paths = [];
-
-  allProducts.forEach((product) => {
-    if (product.isPublished && !categories.includes(product.category)) {
-      categories.push(product.category);
-      paths.push({ slug: product.category });
-    }
-  });
-
-  return paths;
+  const categories = await getCategories();
+  return categories.map((category) => ({
+    slug: category.slug,
+  }));
 }
 
 export async function generateMetadata({ params }) {
@@ -23,14 +16,12 @@ export async function generateMetadata({ params }) {
   };
 }
 
-const CategoryPage = ({ params }) => {
-  // Get all unique categories
-  const allCategories = [...new Set(allProducts.map(p => p.category))].sort();
+const CategoryPage = async ({ params }) => {
+  // Get all categories
+  const allCategories = await getCategories();
 
   // Filter products by category
-  const products = allProducts.filter(product => {
-    return product.category === params.slug && product.isPublished;
-  });
+  const products = await getProducts({ category: params.slug });
 
   // Get category-specific filters (example)
   const brands = [...new Set(products.map(p => p.brand))].sort();
@@ -50,15 +41,15 @@ const CategoryPage = ({ params }) => {
       <div className="px-5 sm:px-10 md:px-24 sxl:px-32 mt-8 flex flex-wrap gap-4">
         {allCategories.map((category) => (
           <Link
-            key={category}
-            href={`/categories/${category}`}
+            key={category.slug}
+            href={`/categories/${category.slug}`}
             className={`px-4 py-2 rounded-full border transition-colors ${
-              params.slug === category
+              params.slug === category.slug
                 ? 'bg-accent dark:bg-accentDark text-white border-accent dark:border-accentDark'
                 : 'border-dark dark:border-light hover:bg-gray-100 dark:hover:bg-gray-800'
             }`}
           >
-            {category.charAt(0).toUpperCase() + category.slice(1)}
+            {category.name}
           </Link>
         ))}
       </div>

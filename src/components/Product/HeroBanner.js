@@ -15,9 +15,9 @@ const HeroBanner = ({ products }) => {
           bg-gradient-to-b from-transparent from-0% to-dark/90 rounded-3xl z-0'
         />
 
-        {heroProduct.image?.src ? (
+        {(heroProduct.imageUrl || heroProduct.image?.src) ? (
           <Image
-            src={heroProduct.image.src}
+            src={heroProduct.imageUrl || heroProduct.image.src}
             alt={heroProduct.title}
             fill
             className='w-full h-full object-center object-cover rounded-3xl -z-10'
