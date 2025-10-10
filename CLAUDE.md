@@ -4,18 +4,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a golf equipment e-commerce site built with Next.js 15, TailwindCSS, and Velite for content management. The site showcases golf products across multiple categories with detailed product pages, filtering, and a modern, responsive design.
+This is a golf equipment e-commerce site with a Next.js 15 frontend and .NET 8 Web API backend. The frontend showcases golf products with a modern, responsive design, while the backend manages product data, inventory, and provides RESTful API endpoints.
 
 ## Tech Stack
 
+### Frontend
 - **Framework**: Next.js 15.2.4 (App Router)
 - **Styling**: TailwindCSS 3.4
-- **Content Management**: Velite.js (MDX-based)
+- **Content Management**: Velite.js (MDX-based, for static content/blogs)
 - **Language**: JavaScript (React 19)
 - **View Counter**: Supabase (optional, requires configuration)
 - **Deployment**: Optimized for Vercel
 
+### Backend API
+- **Framework**: .NET 8.0 Web API
+- **ORM**: Entity Framework Core 9.0
+- **Database**: SQLite (development), can be switched to PostgreSQL/SQL Server for production
+- **Language**: C# 12.0
+- **Documentation**: Swagger/OpenAPI
+
 ## Build & Development Commands
+
+### Frontend (Next.js)
 
 ```bash
 # Install dependencies
@@ -36,6 +46,40 @@ npm start
 # Lint code
 npm run lint
 ```
+
+### Backend API (.NET)
+
+```bash
+# Navigate to API directory
+cd api/GolfShop.Api
+
+# Restore dependencies
+dotnet restore
+
+# Build the API
+dotnet build
+
+# Run the API (starts on http://localhost:5065)
+dotnet run
+
+# Watch mode for development
+dotnet watch run
+```
+
+### Running Both Frontend and Backend
+
+1. **Start the API** (Terminal 1):
+   ```bash
+   cd api/GolfShop.Api
+   dotnet run
+   ```
+   API will be available at `http://localhost:5065`
+
+2. **Start the Frontend** (Terminal 2):
+   ```bash
+   npm run dev
+   ```
+   Frontend will be available at `http://localhost:3000`
 
 ## Architecture Overview
 
@@ -140,12 +184,96 @@ Note: Supabase is optional and only used for blog view counters. The site works 
 - **Shopping Cart**: Not implemented - this is a portfolio/showcase project.
 - **Payment Processing**: Not implemented - this is a portfolio/showcase project.
 
+## API Integration
+
+### API Endpoints
+
+The backend API provides the following endpoints:
+
+**Products:**
+- `GET /api/products` - Get all products (with filtering)
+- `GET /api/products/{id}` - Get product by ID
+- `GET /api/products/by-slug/{slug}` - Get product by slug
+- `POST /api/products` - Create new product
+- `PUT /api/products/{id}` - Update product
+- `DELETE /api/products/{id}` - Delete product
+- `PATCH /api/products/{id}/stock` - Update stock
+
+**Categories:**
+- `GET /api/categories` - Get all categories
+- `GET /api/categories/{slug}` - Get category by slug
+
+### Connecting Frontend to API
+
+To switch the Next.js frontend from MDX-based content to API-based:
+
+1. Create API client in `src/lib/api.js`:
+```javascript
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5065/api';
+
+export async function getProducts(params = {}) {
+  const query = new URLSearchParams(params);
+  const response = await fetch(`${API_BASE_URL}/products?${query}`);
+  return response.json();
+}
+
+export async function getProductBySlug(slug) {
+  const response = await fetch(`${API_BASE_URL}/products/by-slug/${slug}`);
+  return response.json();
+}
+
+export async function getCategories() {
+  const response = await fetch(`${API_BASE_URL}/categories`);
+  return response.json();
+}
+```
+
+2. Update pages to use API instead of Velite:
+   - Replace `import { products } from "@/.velite/generated"` with API calls
+   - Use `fetch` or `axios` in server components
+   - Or use React Query/SWR for client-side data fetching
+
+### Environment Variables
+
+Add to `.env.local`:
+```
+NEXT_PUBLIC_API_URL=http://localhost:5065/api
+```
+
+## Database Management
+
+The API uses SQLite in development. To inspect the database:
+
+```bash
+cd api/GolfShop.Api
+sqlite3 golfshop.db
+```
+
+Common SQL commands:
+```sql
+.tables                    -- List all tables
+SELECT * FROM Products;    -- View all products
+SELECT * FROM Categories;  -- View all categories
+```
+
+### Resetting the Database
+
+To reset and reseed the database, simply delete `golfshop.db` and restart the API:
+```bash
+rm api/GolfShop.Api/golfshop.db
+cd api/GolfShop.Api && dotnet run
+```
+
 ## Future Enhancements
 
 - Implement advanced product filtering UI
 - Add product search functionality
 - Add product comparison feature
-- Implement shopping cart (if needed)
-- Add product reviews system
-- Connect to a real product database/CMS
-- Add proper product images
+- Implement shopping cart and checkout
+- Add product reviews and ratings system
+- Add user authentication and authorization
+- Migrate to PostgreSQL or SQL Server for production
+- Add proper product images and image upload
+- Implement inventory management
+- Add order processing and tracking
+- Create admin dashboard for product management

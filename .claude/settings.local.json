@@ -7,7 +7,15 @@
       "Bash(npm run:*)",
       "Bash(find:*)",
       "Bash(git add:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial golf e-commerce site setup\n\n- Cloned Next.js blog template as foundation\n- Added product schema and content structure for golf equipment\n- Created 7 sample products across clubs, balls, shoes, and gloves categories\n- Built product components: ProductCard, HeroBanner, FeaturedProducts, CategoryShowcase\n- Updated homepage to showcase products instead of blogs\n- Created product detail pages with full MDX content support\n- Added category pages with filtering and navigation\n- Updated site navigation to include product categories\n- Documented complete product structure and filters in PRODUCT_STRUCTURE.md\n- Updated CLAUDE.md with architecture and development guide\n\nBuilt and tested successfully.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(dotnet --version)",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet add package:*)",
+      "Bash(dotnet nuget list:*)",
+      "Bash(dotnet build)",
+      "Bash(dotnet run:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
