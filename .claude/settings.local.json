@@ -15,7 +15,13 @@
       "Bash(dotnet nuget list:*)",
       "Bash(dotnet build)",
       "Bash(dotnet run:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd .NET 8 Web API backend for golf e-commerce\n\n- Created GolfShop.Api project with .NET 8.0\n- Set up Entity Framework Core 9.0 with SQLite\n- Created Product and Category models with full specifications\n- Implemented ProductsController with CRUD operations and filtering\n- Implemented CategoriesController with product counts\n- Added DTOs for clean API responses\n- Configured CORS for Next.js frontend (localhost:3000)\n- Created database seeder with 7 sample products\n- Added comprehensive API documentation in api/README.md\n- Updated main CLAUDE.md with API integration guide\n\nAPI Features:\n- RESTful endpoints for products and categories\n- Query filtering by category, featured, bestSeller, brand, stock\n- JSON serialization for complex fields (specifications, filters)\n- Stock management endpoint\n- Automatic database creation and seeding on startup\n- Swagger/OpenAPI documentation at /swagger\n\nSuccessfully built and tested - all endpoints working correctly.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(git restore:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

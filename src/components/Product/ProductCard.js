@@ -9,7 +9,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="group relative bg-white dark:bg-dark rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-      <Link href={product.url} className="block">
+      <Link href={`/products/${product.slug}`} className="block">
         {/* Product Image */}
         <div className="relative h-64 w-full bg-gray-100 dark:bg-gray-800">
           {(product.imageUrl || product.image?.src) ? (

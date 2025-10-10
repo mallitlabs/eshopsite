@@ -39,7 +39,7 @@ const HeroBanner = ({ products }) => {
 
           <p className="text-lg sm:text-xl opacity-90 mb-2">{heroProduct.brand}</p>
 
-          <Link href={heroProduct.url} className='mt-2'>
+          <Link href={`/products/${heroProduct.slug}`} className='mt-2'>
             <h1 className='font-bold capitalize text-2xl sm:text-3xl md:text-4xl lg:text-5xl'>
               <span className='bg-gradient-to-r from-accent to-accent dark:from-accentDark/50
                 dark:to-accentDark/50 bg-[length:0px_6px]
@@ -71,7 +71,7 @@ const HeroBanner = ({ products }) => {
           </div>
 
           <Link
-            href={heroProduct.url}
+            href={`/products/${heroProduct.slug}`}
             className="mt-6 bg-accent dark:bg-accentDark text-white px-8 py-3 rounded-full font-semibold hover:bg-accent/90 transition-colors"
           >
             Shop Now
