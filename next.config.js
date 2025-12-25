@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
-    // othor next config here...
+    // Use webpack instead of turbopack (required for Velite plugin)
+    turbopack: {},
     compiler: {
       removeConsole: process.env.NODE_ENV === 'production' ? true : false,
     },
