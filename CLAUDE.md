@@ -4,39 +4,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a golf equipment e-commerce site with a Next.js 15 frontend and .NET 8 Web API backend. The frontend showcases golf products with a modern, responsive design, while the backend manages product data, inventory, and provides RESTful API endpoints.
+This is a golf equipment e-commerce site built with Next.js 15 and Supabase. The frontend showcases golf products with a modern, responsive design, while Supabase provides the PostgreSQL database and auto-generated REST API.
 
 ## Tech Stack
 
 ### Frontend
 - **Framework**: Next.js 15.2.4 (App Router)
 - **Styling**: TailwindCSS 3.4
-- **Content Management**: API-based (all product data from .NET API)
 - **Language**: JavaScript (React 19)
 - **Deployment**: Optimized for Vercel
 
-### Backend API
-- **Framework**: .NET 8.0 Web API
-- **ORM**: Entity Framework Core 9.0
-- **Database**: SQLite (development), can be switched to PostgreSQL/SQL Server for production
-- **Language**: C# 12.0
-- **Documentation**: Swagger/OpenAPI
+### Backend
+- **Database**: Supabase (PostgreSQL)
+- **API**: Supabase auto-generated REST API
+- **Auth**: Supabase Auth (ready to implement)
 
 ## Build & Development Commands
-
-### Frontend (Next.js)
 
 ```bash
 # Install dependencies
 npm install
 
-# Generate content from MDX files
-npm run content
-
 # Run development server
 npm run dev
 
-# Build for production (automatically runs content generation)
+# Build for production
 npm run build
 
 # Start production server
@@ -46,60 +38,27 @@ npm start
 npm run lint
 ```
 
-### Backend API (.NET)
-
-```bash
-# Navigate to API directory
-cd api/GolfShop.Api
-
-# Restore dependencies
-dotnet restore
-
-# Build the API
-dotnet build
-
-# Run the API (starts on http://localhost:5065)
-dotnet run
-
-# Watch mode for development
-dotnet watch run
-```
-
-### Running Both Frontend and Backend
-
-1. **Start the API** (Terminal 1):
-   ```bash
-   cd api/GolfShop.Api
-   dotnet run
-   ```
-   API will be available at `http://localhost:5065`
-
-2. **Start the Frontend** (Terminal 2):
-   ```bash
-   npm run dev
-   ```
-   Frontend will be available at `http://localhost:3000`
-
 ## Architecture Overview
 
-### Content Structure
+### Database Schema
 
-Products are managed as MDX files in `content/products/` organized by category:
-```
-content/products/
-├── clubs/        # Drivers, irons, wedges, putters
-├── balls/        # Golf balls (various types)
-├── shoes/        # Golf shoes (spiked, spikeless)
-├── gloves/       # Golf gloves (all weather types)
-├── bags/         # Golf bags (cart, stand, travel)
-└── accessories/  # Rangefinders, GPS, training aids, etc.
-```
+The Supabase database contains two main tables:
 
-### Product Schema
+**Products Table:**
+- `id` (serial, primary key)
+- `title`, `brand`, `price`, `sale_price`
+- `category`, `subcategory`, `description`
+- `image_url`, `images` (JSONB array)
+- `slug` (unique)
+- `featured`, `best_seller`, `new_arrival`, `in_stock`
+- `stock_quantity`, `rating`, `review_count`
+- `specifications`, `filters` (JSONB)
+- `body_content`, `created_at`, `updated_at`, `is_published`
 
-Products are defined in `velite.config.js` with the following fields:
-- **Required**: title, brand, price, category, description, slug, body (MDX content)
-- **Optional**: salePrice, subcategory, image, featured, bestSeller, newArrival, inStock, rating, reviewCount, specifications, filters
+**Categories Table:**
+- `id` (serial, primary key)
+- `name`, `slug` (unique), `description`
+- `image_url`, `display_order`, `is_active`
 
 ### Page Structure
 
@@ -122,143 +81,118 @@ src/components/
 └── Footer/                     # Site footer
 ```
 
+### API Client
+
+The Supabase client is located at `src/lib/supabase.js` and the API functions are in `src/lib/api.js`.
+
+Available functions:
+- `getProducts(params)` - Fetch products with optional filters (category, featured, bestSeller, inStock, brand, limit)
+- `getProductById(id)` - Fetch product by ID
+- `getProductBySlug(slug)` - Fetch product by slug
+- `getCategories()` - Fetch all categories with product counts
+- `getCategoryBySlug(slug)` - Fetch category by slug
+- `createProduct(productData)` - Create new product
+- `updateProduct(id, productData)` - Update product
+- `updateProductStock(id, quantity)` - Update stock quantity
+- `deleteProduct(id)` - Delete product
+
 ## Product Categories & Filters
 
-See `PRODUCT_STRUCTURE.md` for the complete category hierarchy and filter specifications. Key categories:
-
+Key categories:
 1. **Clubs**: Drivers, woods, hybrids, irons, wedges, putters
-   - Filters: club type, hand, gender, shaft material/flex, loft, etc.
 2. **Balls**: 2-5 piece construction options
-   - Filters: compression, construction, cover material, feel
 3. **Shoes**: Men's, women's, junior options
-   - Filters: spike type, waterproof, style, closure type
 4. **Gloves**: Various materials and weather types
-   - Filters: material, leather grade, weather type, hand
 5. **Bags**: Stand, cart, travel, carry bags
 6. **Accessories**: Rangefinders, GPS, training aids, tees, etc.
-
-## Adding New Products
-
-1. Create an MDX file in the appropriate category folder under `content/products/`
-2. Follow the schema defined in `velite.config.js`
-3. Run `npm run content` to regenerate static data
-4. The product will automatically appear on the site
-
-Example product frontmatter:
-```yaml
----
-title: "Product Name"
-brand: "Brand Name"
-price: 299.99
-salePrice: 249.99        # Optional
-category: "clubs"
-subcategory: "drivers"    # Optional
-description: "Short product description"
-featured: true
-bestSeller: true
-slug: "product-slug"
-specifications:
-  key: "value"
-filters:
-  filterType: ["value1", "value2"]
----
-```
 
 ## Environment Variables
 
 **REQUIRED**: Create a `.env.local` file in the project root:
+
 ```bash
-# API Configuration (Required for product data)
-NEXT_PUBLIC_API_URL=http://localhost:5065/api
+# Supabase Configuration (Required)
+# Get these values from your Supabase project dashboard:
+# https://supabase.com/dashboard/project/_/settings/api
+
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
-**Note**:
-- The `.env.local` file is gitignored for security. Each developer must create their own copy.
-- The API URL is required for the frontend to fetch product and category data.
+**Note**: The `.env.local` file is gitignored for security. Each developer must create their own copy.
+
+## Supabase Setup
+
+### 1. Create a Supabase Project
+
+1. Go to [supabase.com](https://supabase.com) and create a new project
+2. Copy your project URL and anon key from Settings > API
+3. Add them to your `.env.local` file
+
+### 2. Create Database Tables
+
+Run the schema SQL in Supabase SQL Editor:
+```bash
+# Located at: supabase/schema.sql
+```
+
+### 3. Seed Initial Data
+
+Run the seed SQL to populate products and categories:
+```bash
+# Located at: supabase/seed.sql
+```
+
+### 4. Row Level Security (RLS)
+
+The schema includes RLS policies that:
+- Allow public read access to published products
+- Allow public read access to active categories
+- Block write operations from anonymous users (use service role for admin)
+
+## Adding New Products
+
+Products can be added directly in the Supabase dashboard or via the API:
+
+```javascript
+import { createProduct } from '@/lib/api';
+
+await createProduct({
+  title: "Product Name",
+  brand: "Brand Name",
+  price: 299.99,
+  salePrice: 249.99,  // Optional
+  category: "clubs",
+  subcategory: "drivers",
+  description: "Short product description",
+  slug: "product-slug",
+  featured: true,
+  bestSeller: true,
+  specifications: { key: "value" },
+  filters: { filterType: ["value1", "value2"] }
+});
+```
 
 ## Important Notes
 
-- **Images**: Product images are currently optional. To add real images, place them in the product folder and reference them in the MDX frontmatter, or use public URLs.
+- **Images**: Product images reference URLs. For production, use Supabase Storage or a CDN.
 - **Filters**: Advanced filtering UI is not yet implemented. Basic brand filtering is shown on category pages.
-- **Shopping Cart**: Not implemented - this is a portfolio/showcase project.
+- **Shopping Cart**: Client-side cart implemented with localStorage (CartContext).
 - **Payment Processing**: Not implemented - this is a portfolio/showcase project.
 
-## API Integration
+## Legacy .NET API (Deprecated)
 
-### API Endpoints
-
-The backend API provides the following endpoints:
-
-**Products:**
-- `GET /api/products` - Get all products (with filtering)
-- `GET /api/products/{id}` - Get product by ID
-- `GET /api/products/by-slug/{slug}` - Get product by slug
-- `POST /api/products` - Create new product
-- `PUT /api/products/{id}` - Update product
-- `DELETE /api/products/{id}` - Delete product
-- `PATCH /api/products/{id}/stock` - Update stock
-
-**Categories:**
-- `GET /api/categories` - Get all categories
-- `GET /api/categories/{slug}` - Get category by slug
-
-### Frontend-API Integration
-
-**Status**: ✓ Fully integrated - The Next.js frontend now fetches all product and category data from the API.
-
-The integration uses an API client library located at `src/lib/api.js` that provides functions for:
-- Fetching all products with optional filtering
-- Fetching individual products by ID or slug
-- Fetching all categories
-- CRUD operations for products
-
-**Note**: All product data comes from the .NET API and SQLite database. MDX content is not used for products.
-
-### API Environment Variables
-
-**IMPORTANT**: You must create a `.env.local` file in the project root with the following content:
-
-```bash
-# API Configuration (Required)
-NEXT_PUBLIC_API_URL=http://localhost:5065/api
-```
-
-The `.env.local` file is gitignored for security. Each developer must create their own copy.
-
-## Database Management
-
-The API uses SQLite in development. To inspect the database:
-
-```bash
-cd api/GolfShop.Api
-sqlite3 golfshop.db
-```
-
-Common SQL commands:
-```sql
-.tables                    -- List all tables
-SELECT * FROM Products;    -- View all products
-SELECT * FROM Categories;  -- View all categories
-```
-
-### Resetting the Database
-
-To reset and reseed the database, simply delete `golfshop.db` and restart the API:
-```bash
-rm api/GolfShop.Api/golfshop.db
-cd api/GolfShop.Api && dotnet run
-```
+The `api/` folder contains a legacy .NET 8 Web API that is no longer used. The application now uses Supabase directly. This folder can be removed if no longer needed for reference.
 
 ## Future Enhancements
 
 - Implement advanced product filtering UI
 - Add product search functionality
 - Add product comparison feature
-- Implement shopping cart and checkout
+- Implement checkout with Stripe
 - Add product reviews and ratings system
-- Add user authentication and authorization
-- Migrate to PostgreSQL or SQL Server for production
-- Add proper product images and image upload
+- Add user authentication with Supabase Auth
+- Add proper product images with Supabase Storage
 - Implement inventory management
 - Add order processing and tracking
 - Create admin dashboard for product management

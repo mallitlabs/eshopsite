@@ -27,7 +27,14 @@
       "Bash(if [ -f golfshop.db ])",
       "Bash(then rm golfshop.db)",
       "Bash(else echo \"No database file found\")",
-      "Bash(fi)"
+      "Bash(fi)",
+      "Bash(npm install:*)",
+      "Bash(az:*)",
+      "Bash(\"NEXT_PUBLIC_SUPABASE_URL=https://cftyfblakrnfllsmvald.supabase.co\" )",
+      "Bash(\"NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_U_1bksp5V5CY5uGgWn3s7Q_cM6trI0j\")",
+      "Bash(gh run list:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []

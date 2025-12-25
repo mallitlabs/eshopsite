@@ -1,6 +1,54 @@
-// API client for Golf Shop backend
+// API client for Golf Shop using Supabase
+import { supabase } from './supabase';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5065/api';
+/**
+ * Transform database row to camelCase for frontend consistency
+ */
+function transformProduct(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    title: row.title,
+    brand: row.brand,
+    price: parseFloat(row.price),
+    salePrice: row.sale_price ? parseFloat(row.sale_price) : null,
+    category: row.category,
+    subcategory: row.subcategory,
+    description: row.description,
+    imageUrl: row.image_url,
+    images: row.images || [],
+    slug: row.slug,
+    featured: row.featured,
+    bestSeller: row.best_seller,
+    newArrival: row.new_arrival,
+    inStock: row.in_stock,
+    stockQuantity: row.stock_quantity,
+    rating: row.rating ? parseFloat(row.rating) : null,
+    reviewCount: row.review_count,
+    specifications: row.specifications || {},
+    filters: row.filters || {},
+    bodyContent: row.body_content,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    isPublished: row.is_published,
+  };
+}
+
+/**
+ * Transform category row to camelCase
+ */
+function transformCategory(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    description: row.description,
+    imageUrl: row.image_url,
+    displayOrder: row.display_order,
+    isActive: row.is_active,
+  };
+}
 
 /**
  * Fetch all products with optional filters
@@ -9,25 +57,41 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5065/a
  */
 export async function getProducts(params = {}) {
   try {
-    const query = new URLSearchParams();
+    let query = supabase
+      .from('products')
+      .select('*')
+      .eq('is_published', true);
 
-    // Add non-empty params to query string
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== null && value !== undefined && value !== '') {
-        query.append(key, value);
-      }
-    });
-
-    const url = `${API_BASE_URL}/products${query.toString() ? `?${query.toString()}` : ''}`;
-    const response = await fetch(url, {
-      cache: 'no-store', // Always get fresh data
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch products: ${response.status}`);
+    // Apply filters
+    if (params.category) {
+      query = query.eq('category', params.category);
+    }
+    if (params.featured !== undefined) {
+      query = query.eq('featured', params.featured);
+    }
+    if (params.bestSeller !== undefined) {
+      query = query.eq('best_seller', params.bestSeller);
+    }
+    if (params.inStock !== undefined) {
+      query = query.eq('in_stock', params.inStock);
+    }
+    if (params.brand) {
+      query = query.eq('brand', params.brand);
+    }
+    if (params.limit) {
+      query = query.limit(params.limit);
     }
 
-    return await response.json();
+    // Order by created_at descending by default
+    query = query.order('created_at', { ascending: false });
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw error;
+    }
+
+    return (data || []).map(transformProduct);
   } catch (error) {
     console.error('Error fetching products:', error);
     return [];
@@ -41,16 +105,19 @@ export async function getProducts(params = {}) {
  */
 export async function getProductById(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/${id}`, {
-      cache: 'no-store',
-    });
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .eq('is_published', true)
+      .single();
 
-    if (!response.ok) {
-      if (response.status === 404) return null;
-      throw new Error(`Failed to fetch product: ${response.status}`);
+    if (error) {
+      if (error.code === 'PGRST116') return null; // Not found
+      throw error;
     }
 
-    return await response.json();
+    return transformProduct(data);
   } catch (error) {
     console.error('Error fetching product by ID:', error);
     return null;
@@ -64,16 +131,19 @@ export async function getProductById(id) {
  */
 export async function getProductBySlug(slug) {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/by-slug/${slug}`, {
-      cache: 'no-store',
-    });
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('slug', slug)
+      .eq('is_published', true)
+      .single();
 
-    if (!response.ok) {
-      if (response.status === 404) return null;
-      throw new Error(`Failed to fetch product: ${response.status}`);
+    if (error) {
+      if (error.code === 'PGRST116') return null; // Not found
+      throw error;
     }
 
-    return await response.json();
+    return transformProduct(data);
   } catch (error) {
     console.error('Error fetching product by slug:', error);
     return null;
@@ -86,15 +156,33 @@ export async function getProductBySlug(slug) {
  */
 export async function getCategories() {
   try {
-    const response = await fetch(`${API_BASE_URL}/categories`, {
-      cache: 'no-store',
-    });
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch categories: ${response.status}`);
+    if (error) {
+      throw error;
     }
 
-    return await response.json();
+    // Get product counts for each category
+    const categoriesWithCounts = await Promise.all(
+      (data || []).map(async (category) => {
+        const { count } = await supabase
+          .from('products')
+          .select('*', { count: 'exact', head: true })
+          .eq('category', category.slug)
+          .eq('is_published', true);
+
+        return {
+          ...transformCategory(category),
+          productCount: count || 0,
+        };
+      })
+    );
+
+    return categoriesWithCounts;
   } catch (error) {
     console.error('Error fetching categories:', error);
     return [];
@@ -108,16 +196,29 @@ export async function getCategories() {
  */
 export async function getCategoryBySlug(slug) {
   try {
-    const response = await fetch(`${API_BASE_URL}/categories/${slug}`, {
-      cache: 'no-store',
-    });
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('slug', slug)
+      .eq('is_active', true)
+      .single();
 
-    if (!response.ok) {
-      if (response.status === 404) return null;
-      throw new Error(`Failed to fetch category: ${response.status}`);
+    if (error) {
+      if (error.code === 'PGRST116') return null; // Not found
+      throw error;
     }
 
-    return await response.json();
+    // Get product count for this category
+    const { count } = await supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .eq('category', slug)
+      .eq('is_published', true);
+
+    return {
+      ...transformCategory(data),
+      productCount: count || 0,
+    };
   } catch (error) {
     console.error('Error fetching category by slug:', error);
     return null;
@@ -131,19 +232,39 @@ export async function getCategoryBySlug(slug) {
  */
 export async function createProduct(productData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/products`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(productData),
-    });
+    const { data, error } = await supabase
+      .from('products')
+      .insert({
+        title: productData.title,
+        brand: productData.brand,
+        price: productData.price,
+        sale_price: productData.salePrice,
+        category: productData.category,
+        subcategory: productData.subcategory,
+        description: productData.description,
+        image_url: productData.imageUrl,
+        images: productData.images || [],
+        slug: productData.slug,
+        featured: productData.featured || false,
+        best_seller: productData.bestSeller || false,
+        new_arrival: productData.newArrival || false,
+        in_stock: productData.inStock !== false,
+        stock_quantity: productData.stockQuantity || 0,
+        rating: productData.rating,
+        review_count: productData.reviewCount,
+        specifications: productData.specifications || {},
+        filters: productData.filters || {},
+        body_content: productData.bodyContent,
+        is_published: productData.isPublished !== false,
+      })
+      .select()
+      .single();
 
-    if (!response.ok) {
-      throw new Error(`Failed to create product: ${response.status}`);
+    if (error) {
+      throw error;
     }
 
-    return await response.json();
+    return transformProduct(data);
   } catch (error) {
     console.error('Error creating product:', error);
     return null;
@@ -158,15 +279,41 @@ export async function createProduct(productData) {
  */
 export async function updateProduct(id, productData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ...productData, id }),
-    });
+    const updateData = {};
 
-    return response.ok;
+    // Only include fields that are provided
+    if (productData.title !== undefined) updateData.title = productData.title;
+    if (productData.brand !== undefined) updateData.brand = productData.brand;
+    if (productData.price !== undefined) updateData.price = productData.price;
+    if (productData.salePrice !== undefined) updateData.sale_price = productData.salePrice;
+    if (productData.category !== undefined) updateData.category = productData.category;
+    if (productData.subcategory !== undefined) updateData.subcategory = productData.subcategory;
+    if (productData.description !== undefined) updateData.description = productData.description;
+    if (productData.imageUrl !== undefined) updateData.image_url = productData.imageUrl;
+    if (productData.images !== undefined) updateData.images = productData.images;
+    if (productData.slug !== undefined) updateData.slug = productData.slug;
+    if (productData.featured !== undefined) updateData.featured = productData.featured;
+    if (productData.bestSeller !== undefined) updateData.best_seller = productData.bestSeller;
+    if (productData.newArrival !== undefined) updateData.new_arrival = productData.newArrival;
+    if (productData.inStock !== undefined) updateData.in_stock = productData.inStock;
+    if (productData.stockQuantity !== undefined) updateData.stock_quantity = productData.stockQuantity;
+    if (productData.rating !== undefined) updateData.rating = productData.rating;
+    if (productData.reviewCount !== undefined) updateData.review_count = productData.reviewCount;
+    if (productData.specifications !== undefined) updateData.specifications = productData.specifications;
+    if (productData.filters !== undefined) updateData.filters = productData.filters;
+    if (productData.bodyContent !== undefined) updateData.body_content = productData.bodyContent;
+    if (productData.isPublished !== undefined) updateData.is_published = productData.isPublished;
+
+    const { error } = await supabase
+      .from('products')
+      .update(updateData)
+      .eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+
+    return true;
   } catch (error) {
     console.error('Error updating product:', error);
     return false;
@@ -181,15 +328,19 @@ export async function updateProduct(id, productData) {
  */
 export async function updateProductStock(id, quantity) {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/${id}/stock`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(quantity),
-    });
+    const { error } = await supabase
+      .from('products')
+      .update({
+        stock_quantity: quantity,
+        in_stock: quantity > 0,
+      })
+      .eq('id', id);
 
-    return response.ok;
+    if (error) {
+      throw error;
+    }
+
+    return true;
   } catch (error) {
     console.error('Error updating product stock:', error);
     return false;
@@ -203,11 +354,16 @@ export async function updateProductStock(id, quantity) {
  */
 export async function deleteProduct(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/${id}`, {
-      method: 'DELETE',
-    });
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
 
-    return response.ok;
+    if (error) {
+      throw error;
+    }
+
+    return true;
   } catch (error) {
     console.error('Error deleting product:', error);
     return false;
